@@ -1,5 +1,5 @@
 module.exports = {
-	createPage: name => `import React, { useEffect } from 'react';
+  createPage: name => `import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
@@ -29,13 +29,14 @@ const ${name} = ({ history, match, updateLayoutProps, showBackButton }) => {
     );
 };
 
-${name}.propTypes = {};
-
-const mapStateToProps = state => ({
+${name}.propTypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     updateLayoutProps: PropTypes.func.isRequired,
     showBackButton: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -44,7 +45,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(${name});`,
-createPageScss: () => `.rhsContent {
+  createPageScss: () => `.rhsContent {
     max-width: 100% !important;
     padding: 20px 0px 40px 0px !important;
 }

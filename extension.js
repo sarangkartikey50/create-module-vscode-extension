@@ -3,10 +3,19 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
-const createModule = require('./create-module');
+const shell = require('shelljs');
+const {
+	createModule,
+	createFunctionalComponent,
+	createComponentIndexJs,
+	createComponentIndexScss,
+	createPageIndexJs,
+	createPageIndexScss
+} = require('./create-module');
 const { QUICK_PICK } = require('./constants');
 
-const configPath = path.resolve(__dirname, 'create-module-config.json');
+shell.config.execPath = String(shell.which('node'));
+// const configPath = path.resolve(__dirname, 'create-module-config.json');
 
 function ab2str(buf) {
 	return String.fromCharCode.apply(null, new Uint16Array(buf));
@@ -21,7 +30,7 @@ function str2ab(str) {
 	return bufView;
 }
 
-const createConfigurations = config => {
+const createConfigurations = (configPath, config) => {
 	fs.writeFile(configPath, JSON.stringify(config, null, 2), function(err) {
 		if (err) {
 			vscode.window.showErrorMessage(
@@ -35,66 +44,158 @@ const createConfigurations = config => {
 	});
 };
 
-const provideConfigurations = callback => {
+const provideConfigurations = (configPath, callback) => {
 	fs.readFile(configPath, 'utf8', (err, data) => {
+		// @ts-ignore
 		if (err) {
 			vscode.window.showErrorMessage(
 				`Please add configurations. ${err.message}`
 			);
 			return;
 		}
-		callback(JSON.parse(data));
+		data = JSON.parse(data);
+		const { modulePath, rootReducersPath, rootSagaPath, workspace } = data;
+		if (!modulePath || !rootReducersPath || !rootSagaPath || !workspace) {
+			vscode.window.showErrorMessage(
+				`Please add configurations. ${err.message}`
+			);
+			return;
+		}
+		callback(data);
 	});
+};
+
+const readDirectory = (context, moduleName, callback) => {
+	provideConfigurations(
+		context.globalState.get('configPath'),
+		({ modulePath }) => {
+			fs.readdir(
+				context.globalState.get('workspace') + modulePath,
+				(err, files) => {
+					if (err) {
+						vscode.window.showErrorMessage(`Couldn't read modules directory`);
+						return;
+					}
+					const isModuleNameFound = files.find(dir => dir === moduleName);
+					if (!isModuleNameFound) {
+						vscode.window.showErrorMessage(
+							`Please enter module which already exists`
+						);
+						return;
+					}
+					callback(
+						context.globalState.get('workspace') + modulePath + moduleName
+					);
+				}
+			);
+		}
+	);
+};
+
+const inputBox = async placeHolder => {
+	const input = await vscode.window.showInputBox({ placeHolder });
+	if (input && input.trim()) {
+		return input;
+	}
+	vscode.window.showErrorMessage('Invalid input');
+	return '';
 };
 
 const handleSelection = async (context, { id, label }) => {
 	switch (id) {
-		case QUICK_PICK.CONFIGURE:
-			const modulePath = await vscode.window.showInputBox({
-				placeHolder: 'Enter path to modules directory'
+		case QUICK_PICK.CONFIGURE: {
+			shell.exec(`mkdir .vscode`, {
+				cwd: context.globalState.get('workspace')
 			});
-			const rootSagaPath = await vscode.window.showInputBox({
-				placeHolder: 'Enter path to root saga'
+			shell.exec('touch crm-config.json', {
+				cwd: context.globalState.get('workspace')
 			});
-			const rootReducersPath = await vscode.window.showInputBox({
-				placeHolder: 'Enter path to root reducer'
+			const modulePath = await inputBox('Enter path to modules directory');
+			const rootSagaPath = await inputBox('Enter path to root saga');
+			const rootReducersPath = await inputBox('Enter path to root reducer');
+			createConfigurations(context.globalState.get('configPath'), {
+				modulePath,
+				rootSagaPath,
+				rootReducersPath,
+				workspace: context.globalState.get('workspace')
 			});
-			createConfigurations({ modulePath, rootSagaPath, rootReducersPath });
 			break;
-		case QUICK_PICK.CREATE_COMPONENT:
-			vscode.window.showInformationMessage(`you have selected component`);
-			break;
-		case QUICK_PICK.CREATE_MODULE:
-			provideConfigurations(
-				({ modulePath, rootReducersPath, rootSagaPath }) => {
-					if (!modulePath || !rootReducersPath || !rootSagaPath) {
-						vscode.window.showErrorMessage('Please add configurations.');
-						return;
-					}
-					console.log(modulePath, rootReducersPath, rootSagaPath);
+		}
+		case QUICK_PICK.CREATE_COMPONENT: {
+			const moduleName = await inputBox('Enter name of existing module');
+			readDirectory(context, moduleName, async modulePath => {
+				shell.exec('mkdir Components', { cwd: modulePath });
+				modulePath += '/Components/';
+				const componentName = await inputBox('Enter name of component');
+				try {
+					createFunctionalComponent(
+						componentName,
+						createComponentIndexJs,
+						createComponentIndexScss,
+						modulePath
+					);
+				} catch (err) {
+					vscode.window.showErrorMessage(
+						'Error in creating component ' + err.message
+					);
 				}
+			});
+			break;
+		}
+		case QUICK_PICK.CREATE_MODULE: {
+			const moduleName = await inputBox('Enter name of module');
+			if (!moduleName && !moduleName.trim()) {
+				vscode.window.showErrorMessage('Please enter module name');
+				return;
+			}
+			const pageNames = await inputBox('Enter name of pages (,) separated');
+			const componentNames = await inputBox(
+				'Enter name of components (,) separated'
 			);
+			provideConfigurations(context.globalState.get('configPath'), config => {
+				try {
+					createModule(
+						{
+							...config,
+							modulePath: config.workspace + config.modulePath
+						},
+						moduleName,
+						(componentNames &&
+							componentNames.split(',').map(name => name.trim())) ||
+							[],
+						(pageNames && pageNames.split(',').map(name => name.trim())) || []
+					);
+					vscode.window.showInformationMessage(
+						`${moduleName} was created successfully.`
+					);
+				} catch (err) {
+					vscode.window.showErrorMessage(
+						'Error in creating module. ' + err.message
+					);
+				}
+			});
 			break;
-		case QUICK_PICK.CREATE_PAGE:
-			vscode.workspace.fs
-				.createDirectory(vscode.Uri.file('TestModule'))
-				.then(
-					() => console.log('created'),
-					err => {
-						console.log(err);
-						vscode.window.showErrorMessage(err.message);
-					}
-				);
-			// vscode.workspace.fs
-			// 	.writeFile(
-			// 		vscode.Uri.file(`./TestModule/index.js`),
-			// 		str2ab('hello world')
-			// 	)
-			// 	.then(
-			// 		() => console.log('created'),
-			// 		err => vscode.window.showErrorMessage(err)
-			// 	);
-			break;
+		}
+		case QUICK_PICK.CREATE_PAGE: {
+			const moduleName = await inputBox('Enter name of existing module');
+			readDirectory(context, moduleName, async modulePath => {
+				shell.exec('mkdir Pages', { cwd: modulePath });
+				modulePath += '/Pages/';
+				const pageName = await inputBox('Enter name of page');
+				try {
+					createFunctionalComponent(
+						pageName,
+						createPageIndexJs,
+						createPageIndexScss,
+						modulePath
+					);
+				} catch (err) {
+					vscode.window.showErrorMessage(
+						'Error in creating component ' + err.message
+					);
+				}
+			});
+		}
 		default:
 			vscode.window.showErrorMessage(`Invalid selection ${label}.`);
 	}
@@ -107,17 +208,34 @@ const handleSelection = async (context, { id, label }) => {
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "create-module" is now active!');
-
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand(
 		'extension.createModule',
-		function() {
+		async function() {
 			// The code you place here will be executed every time your command is executed
+			if (
+				!context.globalState.get('workspace') ||
+				!context.globalState.get('configPath')
+			) {
+				const workspace = await vscode.window.showQuickPick(
+					vscode.workspace.workspaceFolders.map(item => ({
+						...item,
+						label: item.name
+					})),
+					{
+						placeHolder: vscode.workspace.workspaceFolders
+							.map(item => item.name)
+							.join(', ')
+					}
+				);
+				context.globalState.update('workspace', workspace.uri.path);
+				context.globalState.update(
+					'configPath',
+					`${workspace.uri.path}/.vscode/crm-config.json`
+				);
+			}
 			const options = [
 				{
 					label: 'Configure',
@@ -136,16 +254,10 @@ function activate(context) {
 					id: QUICK_PICK.CREATE_PAGE
 				}
 			];
-			const quickPick = vscode.window.createQuickPick();
-			quickPick.items = options;
-			quickPick.onDidChangeSelection(async selection => {
-				// @ts-ignore
-				await handleSelection(context, selection[0]);
-				quickPick.dispose();
+			const selection = await vscode.window.showQuickPick(options, {
+				placeHolder: options.map(option => option.label).join(', ')
 			});
-			quickPick.onDidHide(() => quickPick.dispose());
-			quickPick.show();
-			// Display a message box to the user
+			handleSelection(context, selection);
 		}
 	);
 
