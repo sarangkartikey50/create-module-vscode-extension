@@ -1,0 +1,10 @@
+module.exports = {
+    createConstants: () => `const SOME_CONSTANT = 'SOME_CONSTANT';
+const SOME_CONSTANT_SUCCESS = 'SOME_CONSTANT_SUCCESS';
+const SOME_CONSTANT_ERROR = 'SOME_CONSTANT_ERROR';
+export {
+    SOME_CONSTANT,
+    SOME_CONSTANT_SUCCESS,
+    SOME_CONSTANT_ERROR
+};`
+}

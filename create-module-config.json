@@ -1,0 +1,5 @@
+{
+  "modulePath": "src/modules",
+  "rootSagaPath": "src/sagas.js",
+  "rootReducersPath": "src/reducers.js"
+}

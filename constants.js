@@ -1,0 +1,8 @@
+module.exports = {
+    QUICK_PICK: {
+        CREATE_MODULE: 'CREATE_MODULE',
+        CREATE_COMPONENT: 'CREATE_COMPONENT',
+        CREATE_PAGE: 'CREATE_PAGE',
+        CONFIGURE: 'CONFIGURE'
+    }
+};
