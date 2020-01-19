@@ -1,28 +1,29 @@
 module.exports = {
     createActions: () => `import {
-    SOME_CONSTANT,
-    SOME_CONSTANT_SUCCESS,
-    SOME_CONSTANT_ERROR
+    UPDATE_LAYOUT_PROPS,
+    SHOW_BACK_BUTTON,
+    CLEAR_STATE
 } from './constants';
 
-const someAction = (payload) => ({
-    type: SOME_CONSTANT,
+const updateLayoutProps = payload => ({
+    type: UPDATE_LAYOUT_PROPS,
     payload
 });
 
-const someActionSuccess = (payload) => ({
-    type: SOME_CONSTANT_SUCCESS,
+const showBackButton = payload => ({
+    type: SHOW_BACK_BUTTON,
     payload
 });
 
-const someActionError = (payload) => ({
-    type: SOME_CONSTANT_ERROR,
-    payload
+const clearState = () => ({
+    type: CLEAR_STATE
 });
 
 export {
     someAction,
     someActionSuccess,
-    someActionError
+    someActionError,
+    showBackButton,
+    clearState
 };`
 }

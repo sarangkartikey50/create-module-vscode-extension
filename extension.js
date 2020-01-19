@@ -107,16 +107,17 @@ const handleSelection = async (context, { id, label }) => {
 			shell.exec(`mkdir .vscode`, {
 				cwd: context.globalState.get('workspace')
 			});
-			shell.exec('touch crm-config.json', {
-				cwd: context.globalState.get('workspace')
-			});
 			const modulePath = await inputBox('Enter path to modules directory');
 			const rootSagaPath = await inputBox('Enter path to root saga');
 			const rootReducersPath = await inputBox('Enter path to root reducer');
+			const routePathsPath = await inputBox('Enter path to routePaths.js');
+			const routesPath = await inputBox('Enter path to Routes.js');
 			createConfigurations(context.globalState.get('configPath'), {
 				modulePath,
 				rootSagaPath,
 				rootReducersPath,
+				routePaths: routePathsPath,
+				routes: routesPath,
 				workspace: context.globalState.get('workspace')
 			});
 			break;
@@ -195,6 +196,7 @@ const handleSelection = async (context, { id, label }) => {
 					);
 				}
 			});
+			break;
 		}
 		default:
 			vscode.window.showErrorMessage(`Invalid selection ${label}.`);

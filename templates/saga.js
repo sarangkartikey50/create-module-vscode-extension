@@ -9,7 +9,7 @@ function* someSaga({ payload }){
         const { data } = yield call(someApi, payload);
         yield put(someActionSuccess(data));
     } catch(err) {
-        yield put(someActionError(data));
+        yield put(someActionError(err));
     }
 }
 

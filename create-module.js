@@ -48,13 +48,14 @@ const createFunctionalComponent = (
   name,
   createIndexJs,
   createIndexScss,
-  cwd = ""
+  cwd = "",
+  moduleName
 ) => {
   const componentPath = `${name}/`;
   shell.exec(`rm -rf ${name}`, { cwd });
   shell.exec(`mkdir ${name}`, { cwd });
   shell.exec(`touch ./${name}/index.js`, { cwd });
-  createIndexJs(name, `${componentPath}index.js`, cwd);
+  createIndexJs(name, `${componentPath}index.js`, cwd, moduleName);
   shell.exec(`touch ./${name}/index.scss`, { cwd });
   createIndexScss(`${componentPath}index.scss`, cwd);
   shell.echo(chalk.blue(`${name} component created.`));
@@ -86,6 +87,36 @@ const updateRootSaga = (config, name) => {
   ]);
 };
 
+const updateRoutes = (config, name, pages) => {
+  let pageString = '',
+  importString = '',
+  routeString = '';
+  pages.forEach(page => {
+    pageString += `    ${page}Page: '/${name}/${page}/',\n`;
+    importString += `import ${page} from '${name}/Pages/${page}';\n`;
+    routeString += `        <Route path={routesPath.${page}Page} component={${page}} />\n`;
+  });
+  insertDataInFile(`${config.workspace}${config.routePaths}`, [
+    {
+      indexCallBack: data => data.indexOf("\n", data.lastIndexOf(",")) + 1,
+      str: `\n    /* ${name} Page */
+    ${name}Page: '/${name}/',\n${pageString}`
+    }
+  ]);
+  insertDataInFile(`${config.workspace}${config.routes}`, [
+    {
+      indexCallBack: findImportIndex,
+      str: `import ${name} from '${name}';
+${importString}`
+    },
+    {
+      indexCallBack: data => data.indexOf("\n", data.lastIndexOf("/>")) + 1,
+      str: `\n        {/* ${name} */}
+        <Route path={routesPath.${name}Page} component={${name}} />\n${routeString}`
+    }
+  ]);
+}
+
 const createModule = (config, name, components = [], pages = []) => {
   const modulePath = `${config.modulePath}${name}/`;
   const componentsPath = `${modulePath}Components/`;
@@ -93,7 +124,7 @@ const createModule = (config, name, components = [], pages = []) => {
   shell.exec(`rm -rf ${modulePath}`);
   shell.exec(`mkdir ${modulePath}`);
   shell.exec(`touch ${modulePath}index.js`);
-  createPageIndexJs(name, `${modulePath}index.js`);
+  createPageIndexJs(name, `${modulePath}index.js`, '', name);
   shell.exec(`touch ${modulePath}index.scss`);
   createPageIndexScss(`${modulePath}index.scss`);
   shell.exec(`touch ${modulePath}saga.js`);
@@ -112,7 +143,8 @@ const createModule = (config, name, components = [], pages = []) => {
         component,
         createComponentIndexJs,
         createComponentIndexScss,
-        componentsPath
+        componentsPath,
+        name
       )
     );
   }
@@ -124,7 +156,8 @@ const createModule = (config, name, components = [], pages = []) => {
         page,
         createPageIndexJs,
         createPageIndexScss,
-        pagesPath
+        pagesPath,
+        name
       )
     );
   }
@@ -132,6 +165,7 @@ const createModule = (config, name, components = [], pages = []) => {
   shell.echo(chalk.green(`${name} Reducer added in rootReducer.`));
   updateRootSaga(config, name);
   shell.echo(chalk.green(`${name}Saga added in rootSaga.`));
+  updateRoutes(config, name, pages);
   shell.echo(chalk.blue(`${name} module created.`));
 };
 
@@ -143,8 +177,8 @@ const createComponentIndexJs = (name, path, cwd = "") => {
   writeFile(path, content);
 };
 
-const createPageIndexJs = (name, path, cwd = "") => {
-  const content = createPage(name);
+const createPageIndexJs = (name, path, cwd = "", moduleName) => {
+  const content = createPage(name, moduleName);
   if (cwd) {
     path = `${cwd + path}`;
   }
