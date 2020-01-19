@@ -1,6 +1,6 @@
 {
-	"name": "create-module",
-	"displayName": "create-module",
+	"name": "create-react-module",
+	"displayName": "Create react module",
 	"description": "This creates module automatically",
 	"version": "0.0.1",
 	"engines": {
