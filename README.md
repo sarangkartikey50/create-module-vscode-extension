@@ -1,65 +1,49 @@
-# create-module README
+# Create react module
 
-This is the README for your extension "create-module". After writing up a brief description, we recommend including the following sections.
+With this extension you'll be able generates module with pre-defined templates.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+1. This extension provides three options:
+    a. Create a module - which will create a module.
+    b. Create a page - which will create a page inside a specified module.
+    c. Create a component - which will create a component inside a specified module.
 
-For example if there is an image subfolder under your extension project workspace:
+2. The module structure is as follows:
+    a. index.js - This is the entry file for module.
+    b. index.scss - Corresponding scss file for index.js.
+    c. constants - This is where all the constants for the modules are declared.
+    d. actions - This is where are the redux actions are declared.
+    e. reducer - This contains the state of the module.
+    f. saga - This where saga generators are declared.
+    g. Components - This is where all the components are declared.
+    h. Pages - This is where all the pages for the modules are declared.
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+3. Following files are modified:
+    a. Root reducer (/src/reducers.js). 
+    b. Root saga (/src/sagas.js).
+    c. routePaths.js (new route paths are added for the module and pages).
+    d. Routes.js (new routes are added for the module and pages).
+    
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. Before using the any of the commands, you have to create the config file. Where you have to mention following things:
+    a. Select the workspace where you want to create modules.
+    b. module path: Where are the modules are created (/src/modules/).
+    c. sagas path: Where all the sagas are combined (/src/sagas.js).
+    d. reducers path: Where all the reducers are combined (/src/reducers.js).
+    e. routePaths path: Where all the route paths are declared (/src/routePaths.js).
+    f. Routes path: Where all the routes are declared (/src/Routes.js).
 
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+2. After adding the configurations, a config file will be created inside the workspace/.vscode.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+This is the initial release
 
 -----------------------------------------------------------------------------------------------------------
 
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Cheers!**

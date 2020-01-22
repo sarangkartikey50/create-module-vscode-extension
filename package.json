@@ -2,7 +2,9 @@
 	"name": "create-react-module",
 	"displayName": "Create react module",
 	"description": "This creates module automatically",
-	"version": "0.0.1",
+	"version": "0.0.5",
+	"publisher": "sarang-kartkey",
+	"repository": "https://github.com/sarangkartikey50/create-module-vscode-extension.git",
 	"engines": {
 		"vscode": "^1.41.0"
 	},
@@ -25,17 +27,22 @@
 		"test": "node ./test/runTest.js"
 	},
 	"devDependencies": {
+		"vscode": "^1.1.36"
+	},
+	"dependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.11.7",
 		"@types/vscode": "^1.41.0",
 		"chalk": "^3.0.0",
+		"change-case": "^4.1.1",
 		"eslint": "^6.6.0",
 		"glob": "^7.1.5",
 		"mocha": "^6.2.2",
 		"shelljs": "^0.8.3",
 		"typescript": "^3.6.4",
 		"vscode-test": "^1.2.2",
-		"change-case": "^4.1.1"
+		"webpack": "^4.41.5",
+		"webpack-cli": "^3.3.10"
 	}
 }
