@@ -2,7 +2,7 @@
 	"name": "create-react-module",
 	"displayName": "Create react module",
 	"description": "This creates module automatically",
-	"version": "0.0.5",
+	"version": "1.0.1",
 	"publisher": "sarang-kartkey",
 	"repository": "https://github.com/sarangkartikey50/create-module-vscode-extension.git",
 	"engines": {

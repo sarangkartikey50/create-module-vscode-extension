@@ -1,19 +1,20 @@
 module.exports = {
     createSaga: () => `import { call, put, takeLatest } from 'redux-saga/effects';
-import { SOME_CONSTANT } from './constants';
-import { someActionSuccess, someActionError } from './actions'
-import { someApi } from 'apis';
+// import { SOME_CONSTANT } from './constants';
+// import { someActionSuccess, someActionError } from './actions'
+// import { someApi } from 'apis';
 
 function* someSaga({ payload }){
+    yield 'Remove this line';
     try{
-        const { data } = yield call(someApi, payload);
-        yield put(someActionSuccess(data));
+        // const { data } = yield call(someApi, payload);
+        // yield put(someActionSuccess(data));
     } catch(err) {
-        yield put(someActionError(err));
+        // yield put(someActionError(err));
     }
 }
 
 export default [
-    takeLatest(SOME_CONSTANT, someSaga)
+    // takeLatest(SOME_CONSTANT, someSaga)
 ];`
 }

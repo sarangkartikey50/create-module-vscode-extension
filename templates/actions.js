@@ -1,29 +1,16 @@
 module.exports = {
-    createActions: () => `import {
-    UPDATE_LAYOUT_PROPS,
-    SHOW_BACK_BUTTON,
-    CLEAR_STATE
-} from './constants';
+    createActions: () => `import * as constants from './constants';
+import { keys, camelCase } from 'lodash';
 
-const updateLayoutProps = payload => ({
-    type: UPDATE_LAYOUT_PROPS,
-    payload
+const actions = {};
+    
+keys(constants).forEach(constant => {
+    const typeName = constant;
+    actions[camelCase(typeName)] = payload => ({
+        type: typeName,
+        payload
+    });
 });
 
-const showBackButton = payload => ({
-    type: SHOW_BACK_BUTTON,
-    payload
-});
-
-const clearState = () => ({
-    type: CLEAR_STATE
-});
-
-export {
-    someAction,
-    someActionSuccess,
-    someActionError,
-    showBackButton,
-    clearState
-};`
+export default actions;`
 }

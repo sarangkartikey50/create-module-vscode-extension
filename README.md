@@ -38,12 +38,6 @@ With this extension you'll be able generates module with pre-defined templates.
 
 2. After adding the configurations, a config file will be created inside the workspace/.vscode.
 
-## Release Notes
-
-### 1.0.0
-
-This is the initial release
-
 -----------------------------------------------------------------------------------------------------------
 
 **Cheers!**

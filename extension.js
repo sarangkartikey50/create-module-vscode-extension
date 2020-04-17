@@ -135,6 +135,9 @@ const handleSelection = async (context, { id, label }) => {
 						createComponentIndexScss,
 						modulePath
 					);
+					vscode.window.showInformationMessage(
+						`${componentName} added successfully.`
+					);
 				} catch (err) {
 					vscode.window.showErrorMessage(
 						'Error in creating component ' + err.message
@@ -153,6 +156,7 @@ const handleSelection = async (context, { id, label }) => {
 			const componentNames = await inputBox(
 				'Enter name of components (,) separated'
 			);
+			vscode.window.showInformationMessage(`Creating module ${moduleName}...`);
 			provideConfigurations(context.globalState.get('configPath'), config => {
 				try {
 					createModule(
@@ -189,6 +193,9 @@ const handleSelection = async (context, { id, label }) => {
 						createPageIndexJs,
 						createPageIndexScss,
 						modulePath
+					);
+					vscode.window.showInformationMessage(
+						`${pageName} added successfully.`
 					);
 				} catch (err) {
 					vscode.window.showErrorMessage(

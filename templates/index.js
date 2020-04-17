@@ -4,6 +4,12 @@ const { createSaga } = require('./saga');
 const { createConstants } = require('./constants');
 const { createActions } = require('./actions');
 const { createReducer } = require('./reducer');
+const { createTestsActions } = require('./actions.test');
+const { createTestsReducer } = require('./reducer.test');
+const { createTestsSaga } = require('./saga.test');
+const { createTestsPage } = require('./page.test');
+const { createTestsComponent } = require('./component.test');
+const { createTestsIndex } = require('./index.test');
 module.exports = {
     createComponent,
     createComponentScss,
@@ -12,5 +18,11 @@ module.exports = {
     createSaga,
     createActions,
     createConstants,
-    createReducer
+    createReducer,
+    createTestsActions,
+    createTestsComponent,
+    createTestsPage,
+    createTestsReducer,
+    createTestsSaga,
+    createTestsIndex,
 };
